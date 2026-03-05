@@ -12,11 +12,20 @@ app.use(helmet());
 // ── CORS Configuration ──
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-    : ['http://localhost:5173', 'http://localhost:3000'];
+    : ['http://localhost:5173', 'http://localhost:3000', 'https://vchat-beige.vercel.app'];
 
 app.use(cors({
-    origin: ALLOWED_ORIGINS,
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (ALLOWED_ORIGINS.indexOf(origin) !== -1 || ALLOWED_ORIGINS.includes('*')) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST'],
+    credentials: true,
 }));
 
 const server = http.createServer(app);
@@ -24,6 +33,7 @@ const io = new Server(server, {
     cors: {
         origin: ALLOWED_ORIGINS,
         methods: ['GET', 'POST'],
+        credentials: true,
     },
 });
 
