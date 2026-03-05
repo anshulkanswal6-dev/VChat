@@ -89,7 +89,9 @@ const useWebRTC = (roomId, userName, roomType = 'public', emoji = '😎') => {
     useEffect(() => {
         if (!roomId || !userName) return;
 
-        const socket = io(SOCKET_SERVER_URL);
+        const socket = io(SOCKET_SERVER_URL, {
+            transports: ['websocket'],
+        });
         socketRef.current = socket;
 
         socket.on('connect', () => {
