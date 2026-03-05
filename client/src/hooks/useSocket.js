@@ -7,7 +7,9 @@ const useSocket = () => {
     const socketRef = useRef(null);
 
     useEffect(() => {
-        socketRef.current = io(SOCKET_SERVER_URL);
+        socketRef.current = io(SOCKET_SERVER_URL, {
+            transports: ['websocket'],
+        });
 
         socketRef.current.on('connect', () => {
             console.log('Connected to socket server');
